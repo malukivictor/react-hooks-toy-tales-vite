@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Header from "./Header";
 import ToyForm from "./ToyForm";
@@ -6,19 +6,44 @@ import ToyContainer from "./ToyContainer";
 
 function App() {
   const [showForm, setShowForm] = useState(false);
+  const [toys, setToys] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/toys")
+      .then((res) => res.json())
+      .then((toysFromServer) => setToys(toysFromServer));
+  }, []);
 
   function handleClick() {
     setShowForm((showForm) => !showForm);
   }
 
+  function handleAddNewToy(newToy) {
+    setToys((toys) => [...toys, newToy]);
+  }
+
+  function handleUpdateToy(updatedToy) {
+    setToys((toys) =>
+      toys.map((toy) => (toy.id === updatedToy.id ? updatedToy : toy))
+    );
+  }
+
+  function handleDeleteToy(id) {
+    setToys((toys) => toys.filter((toy) => toy.id !== id));
+  }
+
   return (
     <>
       <Header />
-      {showForm ? <ToyForm /> : null}
+      {showForm ? <ToyForm onAddNewToy={handleAddNewToy} /> : null}
       <div className="buttonContainer">
         <button onClick={handleClick}>Add a Toy</button>
       </div>
-      <ToyContainer />
+      <ToyContainer
+        toys={toys}
+        onUpdateToy={handleUpdateToy}
+        onDeleteToy={handleDeleteToy}
+      />
     </>
   );
 }

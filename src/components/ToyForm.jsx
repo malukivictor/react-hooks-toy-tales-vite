@@ -1,9 +1,20 @@
 import React from "react";
 
-function ToyForm() {
+function ToyForm({ onAddNewToy }) {
+  function handleSubmit(e) {
+    e.preventDefault();
+    const newToy = {
+      name: e.target.name.value,
+      image: e.target.image.value,
+      likes: 0,
+    };
+    onAddNewToy(newToy);
+    e.target.reset();
+  }
+
   return (
     <div className="container">
-      <form className="add-toy-form">
+      <form className="add-toy-form" onSubmit={handleSubmit}>
         <h3>Create a toy!</h3>
         <input
           type="text"
